@@ -53,4 +53,6 @@ Article.associate = (models) => {
   });
 };
 
+module.exports = Article;
+
 /* Article.sequelize.sync({ force: true }) */;

@@ -24,6 +24,15 @@ databaseConnectionTest();
 
 //---------------------------------------
 //Models
-require("./models/User.js");
-require("./models/Comment.js");
-require("./models/Article.js");
+const User = require("./models/User");
+const Article = require("./models/Article.js");
+const Comment = require("./models/Comment.js");
+
+//For reset models and datas
+const reset = false;
+if(reset){
+  User.sequelize.sync({ force: true });
+/*   Article.sequelize.sync({ force: true });
+  Comment.sequelize.sync({ force: true }); */
+}
+//----

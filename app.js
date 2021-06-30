@@ -2,6 +2,9 @@
 const express = require('express');
 const app = express();
 
+//Imports [SECURITY]
+const helmet = require('helmet');
+
 //Database 
 require('./database');
 
@@ -19,14 +22,19 @@ app.use((req, res, next) => {
 
 //-----------------------------------------------------
 //Middleware utilitaires
+app.use(helmet());//Masque l'utilisation d'express
 app.use(express.json());//Pour parser les requètes
 
+app.use('/', (req, res, next) => {
+  console.log("📡 requête entrante ! 📦");
+  next();
+})
+
+
 //-----------------------------------------------------
-//ROUTES
-app.use('/', (req, res) => {
-    res.setHeader('Content-Type', 'text/html');
-    res.status(200).send('<h1 style="text-align:center; font-size:4.5vw">👷‍♀️👷 Le serveur fonctionne ! ⚡️💻</h1>');
-});
+//users ROUTES
+const userRoutes = require('./routes/userRoutes')
+app.use('/api/auth', userRoutes);
 
 //-----------------------------------------------------
 //Exports

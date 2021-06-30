@@ -1,3 +1,4 @@
+
 const { DataTypes } = require("sequelize");
 
 const User = sequelize.define(
@@ -68,5 +69,7 @@ User.associate = (models) => {
     onDelete: "cascade",
   });
 };
+
+module.exports = User;
 
 /* User.sequelize.sync({ force: true }); */
