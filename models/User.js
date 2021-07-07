@@ -22,7 +22,7 @@ const User = sequelize.define(
     profileImage: {
       allowNull: false,
       type: DataTypes.STRING(255),
-      defaultValue: `../assets/profilePictures/user.jpg`,
+      defaultValue: "../../assets/profilPictures/default.jpg",
     },
     email: {
       unique: true,

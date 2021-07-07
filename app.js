@@ -1,5 +1,6 @@
 //Imports
 const express = require('express');
+const cors = require('cors')
 const app = express();
 
 //Imports [SECURITY]
@@ -10,15 +11,7 @@ require('./database');
 
 //-----------------------------------------------------
 //CORS
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
-  );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-  next();
-});
+app.use(cors())
 
 //-----------------------------------------------------
 //Middleware utilitaires
@@ -26,7 +19,7 @@ app.use(helmet());//Masque l'utilisation d'express
 app.use(express.json());//Pour parser les requètes
 
 app.use('/', (req, res, next) => {
-  console.log("📡 requête entrante ! 📦");
+  console.log("✉️  requête entrante ...");
   next();
 })
 
@@ -38,4 +31,4 @@ app.use('/api/auth', userRoutes);
 
 //-----------------------------------------------------
 //Exports
-module.exports = app;
+module.exports = app; 
