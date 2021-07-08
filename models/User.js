@@ -41,6 +41,10 @@ const User = sequelize.define(
       allowNull: true,
       type: DataTypes.STRING(50),
     },
+    bio: {
+      allowNull: true,
+      type: DataTypes.STRING(350),
+    },
     birthday: {
       allowNull: true,
       type: DataTypes.DATE,

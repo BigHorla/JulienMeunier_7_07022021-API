@@ -14,15 +14,15 @@ require('./database');
 app.use(cors())
 
 //-----------------------------------------------------
-//Middleware utilitaires
-app.use(helmet());//Masque l'utilisation d'express
-app.use(express.json());//Pour parser les requètes
+//Middleware utilities
+app.use(helmet());// Hide Express in request headers
+app.use(express.json());// For parsing request
 
+//To see incomming request in log :
 app.use('/', (req, res, next) => {
   console.log("✉️  requête entrante ...");
   next();
 })
-
 
 //-----------------------------------------------------
 //users ROUTES
