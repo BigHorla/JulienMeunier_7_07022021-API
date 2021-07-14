@@ -2,19 +2,19 @@ const { DataTypes } = require("sequelize");
 
 const Article = sequelize.define("Articles", {
   id: {
-    allowNull: false,
-      primaryKey: true,
-      autoIncrement: true,
-      type: DataTypes.INTEGER,
+  allowNull: false,
+    primaryKey: true,
+    autoIncrement: true,
+    type: DataTypes.INTEGER,
   },
-  UserId: {
+  AuthorId: {
     allowNull: false,
     foreignKey: true,
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
+    type: DataTypes.INTEGER,
+    defaultValue: DataTypes.INTEGER,
   },
   title: {
-    allowNull: false,
+    allowNull: true,
     type: DataTypes.STRING(50),
   },
   content: {
@@ -23,12 +23,16 @@ const Article = sequelize.define("Articles", {
   },
   attachment: {
     allowNull: true,
-    type: DataTypes.STRING(120),
+    type: DataTypes.STRING(250),
   },
-  like: {
+  likes: {
     allowNull: false,
     defaultValue: 0,
     type: DataTypes.INTEGER,
+  },
+  wholike: {
+    allowNull: true,
+    type: DataTypes.STRING,
   },
   createdAt: {
     allowNull: false,

@@ -75,5 +75,3 @@ User.associate = (models) => {
 };
 
 module.exports = User;
-
-/* User.sequelize.sync({ force: true }); */

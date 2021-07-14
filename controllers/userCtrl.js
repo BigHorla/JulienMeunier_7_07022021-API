@@ -60,7 +60,7 @@ exports.signup = (req, res, next) => {
       res.status(500).send({
         message:
           err.message ||
-          "💥 Erreur interne au serveur 💥 ECHEC ENCRYPTAGE MOT DE PASSE ❌",
+          "💥 Erreur interne au serveur 💥 ECHEC ENCRYPTAGE MOT DE PASSE 💥",
       });
     });
 };
@@ -104,14 +104,14 @@ exports.login = (req, res) => {
         .catch(() =>
           res.status(500).send({
             message:
-              "💥 Erreur interne au serveur 💥 ECHEC VERIFICATION MOT DE PASSE ❌",
+              "💥 Erreur interne au serveur 💥 ECHEC VERIFICATION MOT DE PASSE 💥",
           })
         );
     })
     .catch((error) =>
       res.status(500).send({
         message:
-          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DE L'UTILISATEUR ❌",
+          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DE L'UTILISATEUR 💥",
       })
     );
 };
@@ -123,17 +123,17 @@ exports.login = (req, res) => {
 exports.getUsers = (req, res) => {
   console.log("📋  Liste des utilisateurs demandée 👨‍👩‍👧‍👦 ");
   User.findAll({
-    order: [["lastName", "ASC"]],
+    order: [["id", "ASC"]],//TODO : by Last Name
   })
     .then((data) => {
       res.send(data);
     })
-    .then(console.log("📡  Liste envoyée ✔️"))
+    .then(console.log("📡 👨‍👩‍👧‍👦  Liste envoyée ✔️"))
     .then(console.log("-------------------------------"))
     .catch(() => {
       res.status(500).send({
         message:
-          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES UTILISATEURS ❌",
+          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES UTILISATEURS 💥",
       });
     });
 };
@@ -143,6 +143,7 @@ exports.getUsers = (req, res) => {
 //----------------------------------------------------------
 
 exports.getUserByID = (req, res) => {
+  console.log("📋   Utilisateur n°"+req.params.id+" demandé 🧑 ");
   User.findOne({
     where: { id: req.params.id },
     attributes: { exclude: ["password"] }, //don't pass the password unnecessarily
@@ -157,7 +158,39 @@ exports.getUserByID = (req, res) => {
     .catch(() => {
       res.status(500).send({
         message:
-          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DE L'UTILISATEUR ❌",
+          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DE L'UTILISATEUR 💥",
       });
     });
 };
+
+//----------------------------------------------------------
+//--[MODIFY USER BY ID]-------------------------------------
+//----------------------------------------------------------
+
+exports.modify = (req, res) => {
+  console.log("📋  Modification de l'utilisateur n°"+req.params.UserId+" demandée 📜");
+  User.findOne({
+    where: { id: req.params.UserId },
+  })
+    .then((data) => {
+      if (data.id != req.body.UserId) {
+        res.send({ message: "⚠️ Vous n'avez pas les droits pour effectuer cette action ⚠️" });
+      } else {
+        data.email = req.body.email;
+        data.lastName = req.body.lastName;
+        data.firstName = req.body.firstName;
+        data.job = req.body.job;
+        data.bio = req.body.bio;
+        data.birthday = req.body.birthday;
+          data.save()
+          .then(console.log("✏️  Utilisateur modifié ! ✔️"))
+        res.send(data);
+      }
+    })
+    .catch(() => {
+      res.status(500).send({
+        message:
+          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES INFOS UTILISATEUR 💥",
+      });
+    });
+};  

@@ -13,6 +13,11 @@ const Comment = sequelize.define(
       allowNull: false,
       type: DataTypes.TEXT,
     },
+    AuthorId: {
+      allowNull: false,
+      foreignKey: true,
+      type: DataTypes.INTEGER,
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
