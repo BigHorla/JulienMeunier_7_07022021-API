@@ -25,13 +25,17 @@ app.use('/', (req, res, next) => {
 })
 
 //-----------------------------------------------------
-//users ROUTES
+//USERS ROUTES
 const userRoutes = require('./routes/userRoutes')
 app.use('/api/auth', userRoutes);
 
-//articles ROUTES
+//ARTICLES ROUTES
 const articleRoutes = require('./routes/articleRoutes')
 app.use('/api/article/', articleRoutes);
+
+//COMMENTS ROUTES
+const commentRoutes = require('./routes/commentRoutes')
+app.use('/api/comment/', commentRoutes);
 
 //-----------------------------------------------------
 //Exports

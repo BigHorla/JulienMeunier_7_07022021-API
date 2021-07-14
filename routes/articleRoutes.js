@@ -44,7 +44,7 @@ router.put("/like:ArticleId", articleCtrl.like);
 //DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-
 
 //delete article
-router.delete("/delete:id", articleCtrl.delete);
+router.delete("/delete:ArticleId", articleCtrl.delete);
 
 //-----------------------
 module.exports = router;

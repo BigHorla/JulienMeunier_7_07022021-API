@@ -1,5 +1,4 @@
 const Article = require("../models/Article");
-const { use } = require("../routes/articleRoutes");
 
 //----------------------------------------------------------
 //--[NEW ARTICLE]-------------------------------------------
@@ -30,7 +29,7 @@ exports.newArticle = (req, res, next) => {
 exports.getArticleByID = (req, res) => {
     console.log("📋  Un article est demandé 📜");
     Article.findOne({
-      where: { id: req.params.id },
+      where: { id: req.params.id },//TODO check params
     })
       .then((data) => {
         if (!data) {
@@ -217,9 +216,9 @@ exports.like = (req, res) => {
 //--[DELETE BY ID]------------------------------------------
 //----------------------------------------------------------
 exports.delete = (req, res, next) => {
-    console.log("📋  Suppression de l'articles n°"+req.params.id+" demandée 📜");
+    console.log("📋  Suppression de l'articles n°"+req.params.ArticleId+" demandée 📜");
     Article.findOne({
-        where: { id: req.params.id },
+        where: { id: req.params.ArticleId },
       })
       .then((data) => {
         if (data.AuthorId != req.body.UserId) {
