@@ -7,7 +7,7 @@ exports.newComment = (req, res, next) => {
     console.log("📋  La création d'un commentaire est demandé 🎤");
     Comment.create({
         AuthorId: req.body.UserId,
-        ArticleId : req.params.ArticleId,
+        ArticleId : req.params.id,
         content : req.body.content,
     })
     .then(() => {
@@ -28,7 +28,8 @@ exports.newComment = (req, res, next) => {
 exports.getComments= (req, res) => {
     console.log("📋  Les commentaires d'un article sont demandés 📜");
     Comment.findAll({
-      where: { ArticleId: req.params.ArticleId },//TODO check params
+      where: { ArticleId: req.params.id },
+      order: [["createdAt", "ASC"]]
     })
       .then((data) => {
         if (data == "") {
@@ -49,9 +50,9 @@ exports.getComments= (req, res) => {
 //--[MODIFY BY ID]------------------------------------------
 //----------------------------------------------------------
 exports.modify = (req, res) => {
-    console.log("📋  Modification du commentaire n°"+req.params.CommentId+" demandée 📜");
+    console.log("📋  Modification du commentaire n°"+req.params.id+" demandée 📜");
     Comment.findOne({
-      where: { id: req.params.CommentId },
+      where: { id: req.params.id },
     })
       .then((data) => {
         if (data.AuthorId != req.body.UserId) {
@@ -82,9 +83,9 @@ exports.modify = (req, res) => {
 //--[DELETE BY ID]------------------------------------------
 //----------------------------------------------------------
 exports.delete = (req, res) => {
-    console.log("📋  Suppression du commentaire n°"+req.params.CommentId+" demandée 📜");
+    console.log("📋  Suppression du commentaire n°"+req.params.id+" demandée 📜");
     Comment.findOne({
-      where: { id: req.params.CommentId },
+      where: { id: req.params.id },
     })
       .then((data) => {
         if (data.AuthorId != req.body.UserId) {

@@ -22,7 +22,7 @@ const User = sequelize.define(
     profileImage: {
       allowNull: false,
       type: DataTypes.STRING(255),
-      defaultValue: "../../assets/profilPictures/default.jpg",
+      defaultValue: "/img/default.jpg",
     },
     email: {
       unique: true,
@@ -44,10 +44,7 @@ const User = sequelize.define(
     bio: {
       allowNull: true,
       type: DataTypes.STRING(350),
-    },
-    birthday: {
-      allowNull: true,
-      type: DataTypes.DATE,
+      defaultValue: "Je n'ai pas encore écrit ma bio, je le fait dès que possible !",
     },
     createdAt: {
       allowNull: false,

@@ -1,15 +1,24 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const fs = require("file-system");
 
 require("dotenv").config();
 const TOKEN = process.env.TOKEN;
+
+const debugOn = false;
+
+const debug = (text) => {
+  if(debugOn){
+    console.log(text);
+  }
+}
 
 //----------------------------------------------------------
 //--[SIGNUP]------------------------------------------------
 //----------------------------------------------------------
 exports.signup = (req, res, next) => {
-  console.log("💾 Demande d'inscription ! 📋");
+  debug("💾 Demande d'inscription ! 📋");
 
   //Request checking
   if (!req.body.lastName) {
@@ -98,7 +107,7 @@ exports.login = (req, res) => {
           }
           res.status(200).send({
             userId: user.id,
-            token: jwt.sign({ userId: user.id }, TOKEN, { expiresIn: "24h" }),
+            token: jwt.sign({ userId: user.id, userRole : user.roles }, TOKEN, { expiresIn: "24h" }),
           });
         })
         .catch(() =>
@@ -121,15 +130,13 @@ exports.login = (req, res) => {
 //----------------------------------------------------------
 
 exports.getUsers = (req, res) => {
-  console.log("📋  Liste des utilisateurs demandée 👨‍👩‍👧‍👦 ");
+  debug("📋  Liste des utilisateurs demandée 👨‍👩‍👧‍👦 ");
   User.findAll({
-    order: [["id", "ASC"]],//TODO : by Last Name
+    order: [["lastName", "ASC"]],
   })
     .then((data) => {
       res.send(data);
     })
-    .then(console.log("📡 👨‍👩‍👧‍👦  Liste envoyée ✔️"))
-    .then(console.log("-------------------------------"))
     .catch(() => {
       res.status(500).send({
         message:
@@ -143,7 +150,7 @@ exports.getUsers = (req, res) => {
 //----------------------------------------------------------
 
 exports.getUserByID = (req, res) => {
-  console.log("📋   Utilisateur n°"+req.params.id+" demandé 🧑 ");
+  debug("📋   Utilisateur n°"+req.params.id+" demandé 🧑 ");
   User.findOne({
     where: { id: req.params.id },
     attributes: { exclude: ["password"] }, //don't pass the password unnecessarily
@@ -168,22 +175,26 @@ exports.getUserByID = (req, res) => {
 //----------------------------------------------------------
 
 exports.modify = (req, res) => {
-  console.log("📋  Modification de l'utilisateur n°"+req.params.UserId+" demandée 📜");
+
+  debug("📋  Modification de l'utilisateur n°"+req.params.id+" demandée 📜");
   User.findOne({
-    where: { id: req.params.UserId },
+    where: { id: req.params.id },
+    attributes: { exclude: ["password"] }, //don't pass the password unnecessarily
   })
     .then((data) => {
       if (data.id != req.body.UserId) {
         res.send({ message: "⚠️ Vous n'avez pas les droits pour effectuer cette action ⚠️" });
       } else {
+
         data.email = req.body.email;
         data.lastName = req.body.lastName;
         data.firstName = req.body.firstName;
         data.job = req.body.job;
         data.bio = req.body.bio;
         data.birthday = req.body.birthday;
-          data.save()
-          .then(console.log("✏️  Utilisateur modifié ! ✔️"))
+         
+        data.save()
+          .then(debug("✏️  Utilisateur modifié ! ✔️"))
         res.send(data);
       }
     })
@@ -193,4 +204,58 @@ exports.modify = (req, res) => {
           "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES INFOS UTILISATEUR 💥",
       });
     });
-};  
+};
+
+//----------------------------------------------------------
+//--[MODIFY USER's PIC BY ID]-------------------------------
+//----------------------------------------------------------
+exports.picture = (req, res) => {
+  console.log(req.params.id);
+  debug("📋  Modification de l'utilisateur n°"+req.params.id+" demandée 📜");
+  User.findOne({
+    where: { id: req.params.id },
+    attributes: { exclude: ["password"] }, //don't pass the password unnecessarily
+  })
+    .then((data) => {
+      const oldImg = './img/'+data.profileImage.split('/img/')[1];
+      console.log(oldImg);
+      data.profileImage = req.protocol+"://"+req.get('host')+"/img/"+req.file.filename   
+      data.save()
+      .then(debug("✏️  Image Utilisateur modifié ! ✔️"))
+      .catch((err) => console.log(err))
+      res.send(data);     
+      fs.unlinkSync(oldImg)
+    })
+    .catch(() => {
+      res.status(500).send({
+        message:
+          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES INFOS UTILISATEUR 💥",
+      }); 
+    });
+};
+
+//----------------------------------------------
+//--[ADMIN POWER]-------------------------------
+//----------------------------------------------
+exports.admin = (req, res) => {
+  console.log(req.params.id);
+  debug("📋  Modification de l'utilisateur n°"+req.params.id+" demandée 📜");
+  User.findOne({
+    where: { id: req.params.id },
+    attributes: { exclude: ["password"] }, //don't pass the password unnecessarily
+  })
+    .then((data) => {
+      data.roles != "admin" ? newRole = "admin" : newRole = "user"
+      data.roles = newRole   
+      data.save()
+      .then(debug("✏️  Image Utilisateur modifié ! ✔️"))
+      .catch((err) => console.log(err))
+      res.send(data);
+    })
+    .catch(() => {
+      res.status(500).send({
+        message:
+          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES INFOS UTILISATEUR 💥",
+      }); 
+    });
+};

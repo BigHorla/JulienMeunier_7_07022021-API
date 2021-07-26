@@ -17,12 +17,7 @@ app.use(cors())
 //Middleware utilities
 app.use(helmet());// Hide Express in request headers
 app.use(express.json());// For parsing request
-
-//To see incomming request in log :
-app.use('/', (req, res, next) => {
-  console.log("✉️  requête entrante ...");
-  next();
-})
+app.use("/img", express.static("img")); 
 
 //-----------------------------------------------------
 //USERS ROUTES

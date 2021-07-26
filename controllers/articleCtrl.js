@@ -1,15 +1,17 @@
 const Article = require("../models/Article");
+const fs = require("file-system")
 
 //----------------------------------------------------------
 //--[NEW ARTICLE]-------------------------------------------
 //----------------------------------------------------------
 exports.newArticle = (req, res, next) => {
     console.log("📋  La création d'un article est demandé 📜");
+    
     Article.create({
         AuthorId: req.body.UserId,
         title : req.body.title,
         content : req.body.content,
-        attachment : req.body.attachment 
+        attachment : req.file ? req.protocol+"://"+req.get('host')+"/img/"+req.file.filename : null
     })
     .then(() => {
         res.status(201).send({ message: "💾 Article enregistré ✔️" });
@@ -29,7 +31,7 @@ exports.newArticle = (req, res, next) => {
 exports.getArticleByID = (req, res) => {
     console.log("📋  Un article est demandé 📜");
     Article.findOne({
-      where: { id: req.params.id },//TODO check params
+      where: { id: req.params.ArticleId },
     })
       .then((data) => {
         if (!data) {
@@ -59,7 +61,6 @@ exports.getArticles = (req,res, next) => {
       res.send(data);
     })
     .then(console.log("📡 📜  Liste envoyée ✔️"))
-    .then(console.log("-------------------------------"))
     .catch(() => {
       res.status(500).send({
         message:
@@ -72,9 +73,9 @@ exports.getArticles = (req,res, next) => {
 //--[GET ALL BY AUTHOR]-------------------------------------
 //----------------------------------------------------------
 exports.getArticlesByAuthor = (req, res) => {
-    console.log("📋  Liste des articles de l'utilisateur n°"+req.params.AuthorId+" demandée 📜");
+    console.log("📋  Liste des articles de l'utilisateur n°"+req.params.id+" demandée 📜");
     Article.findAll({
-      where: { AuthorId: req.params.AuthorId }
+      where: { AuthorId: req.params.id }
     })
       .then((data) => {
         if (!data) {
@@ -95,9 +96,9 @@ exports.getArticlesByAuthor = (req, res) => {
 //--[WHO LIKE IT]-------------------------------------------
 //----------------------------------------------------------
 exports.whoLikeIt = (req, res) => {
-  console.log("📋  Nombre de like de l'article n°"+req.params.ArticleId+" demandé 📜");
+  console.log("📋  Nombre de like de l'article n°"+req.params.id+" demandé 📜");
   Article.findOne({
-    where: { id: req.params.ArticleId },
+    where: { id: req.params.id },
   })
     .then((data) => {      
       res.send({ userWhoLikeIt : data.wholike.split(",") });
@@ -145,7 +146,7 @@ exports.modify = (req, res) => {
             data.content = req.body.content;
             data.attachment = req.body.attachment;
             data.save()
-            .then(console.log("✏️  Article modifié ! ✔️"))
+            .then(console.log("✏️  Article n°"+req.params.id+" modifié ! ✔️"))
           res.send(data);
         }
       })
@@ -161,9 +162,9 @@ exports.modify = (req, res) => {
 //--[PUT/REMOVE A LIKE BY ARTICLE ID]-----------------------
 //----------------------------------------------------------
 exports.like = (req, res) => {
-  console.log("📋  Like de l'articles n°"+req.params.ArticleId+" demandée 📜  par l'utilisateur n°"+req.body.UserId);
+  console.log("📋  Like de l'articles n°"+req.params.id+" demandée 📜  par l'utilisateur n°"+req.body.UserId);
   Article.findOne({
-    where: { id: req.params.ArticleId },
+    where: { id: req.params.id },
   })
     .then((data) => {
       users_who_like = data.wholike;
@@ -173,8 +174,8 @@ exports.like = (req, res) => {
       if(users_who_like == null || users_who_like == ""){//if not, let's add it
         data.wholike = req.body.UserId;
         data.likes += 1;
-        res.send({ message: "📜  Article "+req.params.ArticleId+" liké ! 👍" });
-        console.log("📜  Article "+req.params.ArticleId+" liké ! 👍")
+        res.send({ message: "📜  Article "+req.params.id+" liké ! 👍" });
+        console.log("📜  Article "+req.params.id+" liké ! 👍")
         
       }else{//If yes...
         users_who_like = users_who_like.split(",");
@@ -187,13 +188,13 @@ exports.like = (req, res) => {
           if(users_who_like == []){
             users_who_like = null;
           }
-          res.send({ message: "📜  Article "+req.params.ArticleId+" disliké ! 👎" });
-          console.log("📜  Article "+req.params.ArticleId+" disliké ! 👎")
+          res.send({ message: "📜  Article "+req.params.id+" disliké ! 👎" });
+          console.log("📜  Article "+req.params.id+" disliké ! 👎")
 
         }else{//if yes, let's remove it  
           users_who_like.push(req.body.UserId);
-          res.send({ message: "📜  Article "+req.params.ArticleId+" liké ! 👍" });
-          console.log("📜  Article "+req.params.ArticleId+" liké ! 👍")        
+          res.send({ message: "📜  Article "+req.params.id+" liké ! 👍" });
+          console.log("📜  Article "+req.params.id+" liké ! 👍")        
         }
 
         data.likes = users_who_like.length;
@@ -215,18 +216,29 @@ exports.like = (req, res) => {
 //----------------------------------------------------------
 //--[DELETE BY ID]------------------------------------------
 //----------------------------------------------------------
+
 exports.delete = (req, res, next) => {
-    console.log("📋  Suppression de l'articles n°"+req.params.ArticleId+" demandée 📜");
+    console.log("📋  Suppression de l'articles n°"+req.params.id+" demandée 📜");
     Article.findOne({
-        where: { id: req.params.ArticleId },
+        where: { id: req.params.id },
       })
       .then((data) => {
+        console.log(data.AuthorId)
+        console.log(req.body)
         if (data.AuthorId != req.body.UserId) {
           res.send({ message: "⚠️ Vous n'avez pas les droits pour effectuer cette action ⚠️" });
         } else {
+          if(data.attachment){
+            const oldImg = './img/'+data.attachment.split('/img/')[1];
+            fs.unlinkSync(oldImg);
             data.destroy()
             .then(console.log("💣  Article supprimé ! ✔️"))
             res.send({ message: "💣  Article supprimé ! ✔️"});
+          }else{
+            data.destroy()
+            .then(console.log("💣  Article supprimé ! ✔️"))
+            res.send({ message: "💣  Article supprimé ! ✔️"});
+          }            
         }
       })
       .catch(() => {
