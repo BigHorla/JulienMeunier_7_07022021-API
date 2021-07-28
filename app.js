@@ -17,6 +17,7 @@ app.use(cors())
 //Middleware utilities
 app.use(helmet());// Hide Express in request headers
 app.use(express.json());// For parsing request
+app.use("/demo", express.static("demo")); 
 app.use("/img", express.static("img")); 
 
 //-----------------------------------------------------

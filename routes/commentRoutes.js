@@ -3,34 +3,25 @@ const router = express.Router();
 const commentCtrl = require("../controllers/commentCtrl");
 const auth = require("../middleware/auth");
 
-//TODO : restor auth
-
 //POST-POST-POST-POST-POST-POST-POST-POST-POST-POST-POST-
 //POST-POST-POST-POST-POST-POST-POST-POST-POST-POST-POST-
 //POST-POST-POST-POST-POST-POST-POST-POST-POST-POST-POST-
 
 //new comment
-router.post("/new/:id", commentCtrl.newComment);
+router.post("/new/:ArticleId", auth , commentCtrl.newComment);
 
 //GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-
 //GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-
 //GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-
 
 //get comments by Article ID
-router.get("/commentOf/:id", /* auth, */ commentCtrl.getComments);
-
-//PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-
-//PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-
-//PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-
-
-//modify by id
-router.put("/modify/:id",/*  auth, */ commentCtrl.modify);
+router.get("/commentOf/:ArticleId", auth , commentCtrl.getComments);
 
 //DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-
 //DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-
 //DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-
 
-//delete comment by id //TODO : POST
-router.post("/delete/:id", commentCtrl.delete);
+//delete comment by id
+router.delete("/delete/:id", auth , commentCtrl.delete);
 
 module.exports = router;

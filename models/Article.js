@@ -31,7 +31,8 @@ const Article = sequelize.define("Articles", {
     type: DataTypes.INTEGER,
   },
   wholike: {
-    allowNull: true,
+    allowNull: false,
+    defaultValue: "",
     type: DataTypes.STRING,
   },
   createdAt: {

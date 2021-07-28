@@ -7,7 +7,7 @@ exports.newComment = (req, res, next) => {
     console.log("📋  La création d'un commentaire est demandé 🎤");
     Comment.create({
         AuthorId: req.body.UserId,
-        ArticleId : req.params.id,
+        ArticleId : req.params.ArticleId,
         content : req.body.content,
     })
     .then(() => {
@@ -28,7 +28,7 @@ exports.newComment = (req, res, next) => {
 exports.getComments= (req, res) => {
     console.log("📋  Les commentaires d'un article sont demandés 📜");
     Comment.findAll({
-      where: { ArticleId: req.params.id },
+      where: { ArticleId: req.params.ArticleId },
       order: [["createdAt", "ASC"]]
     })
       .then((data) => {
@@ -87,19 +87,17 @@ exports.delete = (req, res) => {
     Comment.findOne({
       where: { id: req.params.id },
     })
-      .then((data) => {
-        if (data.AuthorId != req.body.UserId) {
-          res.send({ message: "⚠️ Vous n'avez pas les droits pour effectuer cette action ⚠️" });
-        } else {
-            data.destroy();
-            res.send({ message : "Modification effectuée ✔️"});
-        }
+    .then((data) => {
+      data.destroy().then(() => {
+        console.log("💣  Commentaire supprimé ! ✔️")
+        res.send({ message: "💣  Commentaire supprimé ! ✔️"})
       })
-      .catch(() => {
-        res.status(500).send({
-          message:
-            "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES ARTICLES 💥",
-        });
+    .catch(() => {
+      res.status(500).send({
+        message:
+          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES ARTICLES 💥",
       });
-  };
+    });
+  })
+}
 

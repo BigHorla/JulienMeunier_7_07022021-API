@@ -26,30 +26,7 @@ exports.newArticle = (req, res, next) => {
 };
 
 //----------------------------------------------------------
-//--[GET ONE BY ID]-----------------------------------------
-//----------------------------------------------------------
-exports.getArticleByID = (req, res) => {
-    console.log("📋  Un article est demandé 📜");
-    Article.findOne({
-      where: { id: req.params.ArticleId },
-    })
-      .then((data) => {
-        if (!data) {
-          res.send({ message: "⚠️ Article inexistant ⚠️" });
-        } else {
-          res.send(data);
-        }
-      })
-      .catch(() => {
-        res.status(500).send({
-          message:
-            "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DE L'ARTICLE 💥",
-        });
-      });
-  };
-
-//----------------------------------------------------------
-//--[GET ALL ARTCILES]--------------------------------------
+//--[GET ALL ARTICLES]--------------------------------------
 //----------------------------------------------------------
 
 exports.getArticles = (req,res, next) => {
@@ -59,6 +36,29 @@ exports.getArticles = (req,res, next) => {
   })
     .then((data) => {
       res.send(data);
+    })
+    .then(console.log("📡 📜  Liste envoyée ✔️"))
+    .catch(() => {
+      res.status(500).send({
+        message:
+          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES ARTICLES 💥",
+      });
+    });
+}
+
+//----------------------------------------------------------
+//--[GET SOME ]---------------------------------------------
+//----------------------------------------------------------
+
+exports.getSomeArticles = (req,res, next) => {
+    console.log("📋  Liste des articles demandée 📜");
+    let batch = parseInt(req.params.batch);
+  Article.findAll({
+    order: [["createdAt", "DESC"]],
+    limit : batch
+  })
+    .then((data) => {
+      res.send(data)      
     })
     .then(console.log("📡 📜  Liste envoyée ✔️"))
     .catch(() => {
@@ -115,7 +115,7 @@ exports.whoLikeIt = (req, res) => {
 //--[COUNT OF LIKES]-------------------------------------------
 //----------------------------------------------------------
 exports.count = (req, res) => {
-  console.log("📋  Liste des utilisateurs aimant l'article n°"+req.params.ArticleId+" demandée 📜");
+  console.log("📋  Liste des utilisateurs aimant l'article n°"+req.params.id+" demandée 📜");
   Article.findOne({
     where: { id: req.params.ArticleId },
   })
@@ -136,7 +136,7 @@ exports.count = (req, res) => {
 exports.modify = (req, res) => {
     console.log("📋  Modification de l'articles n°"+req.params.id+" demandée 📜");
     Article.findOne({
-      where: { id: req.params.ArticleId },
+      where: { id: req.params.id },
     })
       .then((data) => {
         if (data.AuthorId != req.body.UserId) {
@@ -223,23 +223,22 @@ exports.delete = (req, res, next) => {
         where: { id: req.params.id },
       })
       .then((data) => {
-        console.log(data.AuthorId)
-        console.log(req.body)
-        if (data.AuthorId != req.body.UserId) {
-          res.send({ message: "⚠️ Vous n'avez pas les droits pour effectuer cette action ⚠️" });
-        } else {
-          if(data.attachment){
-            const oldImg = './img/'+data.attachment.split('/img/')[1];
-            fs.unlinkSync(oldImg);
-            data.destroy()
-            .then(console.log("💣  Article supprimé ! ✔️"))
-            res.send({ message: "💣  Article supprimé ! ✔️"});
-          }else{
-            data.destroy()
-            .then(console.log("💣  Article supprimé ! ✔️"))
-            res.send({ message: "💣  Article supprimé ! ✔️"});
-          }            
-        }
+        if(data.attachment){
+
+          const oldImg = './img/'+data.attachment.split('/img/')[1];
+          fs.unlinkSync(oldImg);
+
+          data.destroy().then(() => {
+            console.log("💣  Article supprimé ! ✔️")
+            res.send({ message: "💣  Article supprimé ! ✔️"})
+          })
+          
+        }else{
+          data.destroy().then(() => {
+            console.log("💣  Article supprimé ! ✔️")
+            res.send({ message: "💣  Article supprimé ! ✔️"})
+          })
+        }            
       })
       .catch(() => {
         res.status(500).send({

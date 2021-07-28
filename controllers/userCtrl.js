@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Article = require("../models/Article");
+const Comment = require("../models/Comment");
 const fs = require("file-system");
 
 require("dotenv").config();
@@ -258,4 +260,85 @@ exports.admin = (req, res) => {
           "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES INFOS UTILISATEUR 💥",
       }); 
     });
+};
+
+//----------------------------------------------
+//--[MODIFY PASSWORD]---------------------------
+//----------------------------------------------
+exports.password = (req, res) => {
+  console.log(req.params.id);
+  debug("📋  Modification de l'utilisateur n°"+req.params.id+" demandée 📜");
+  User.findOne({
+    where: { id: req.params.id },
+  })
+    .then((user) => {
+      bcrypt
+      .compare(req.body.password, user.password)
+      .then((valid) => {
+        if(!valid){
+          res.status(404).send({ message: "⚠️ Mot de passe incorrect 🔒" });
+        }else{
+          bcrypt
+          .hash(req.body.newPassword, 10)
+          .then((hash)=>{
+            user.password = hash;
+            user.save();
+            res.status(200).send({ message: "💾 Mot de passe modifié ✔️" });
+          })
+        }
+      })
+    })
+    .catch(() => {
+      res.status(500).send({
+        message:
+          "💥 Erreur interne au serveur 💥 ECHEC RECUPERATION DES INFOS UTILISATEUR 💥",
+      }); 
+    });
+};
+
+//----------------------------------------------
+//--[DELETE USER]-------------------------------
+//----------------------------------------------
+exports.delete = (req, res) => {
+
+  debug("📋  Suppression de l'utilisateur n°"+req.params.id+" demandée 💣");
+
+  Comment.findAll({
+    where: { AuthorId: req.params.id },
+  })
+  .then((comments) => {
+    comments.forEach(element => {
+      element.destroy();
+    });
+  })
+  .then(debug("💣 Commentaires supprimés ! ✔️"))
+  .catch((err) => console.log(err))
+
+  Article.findAll({
+    where: { AuthorId: req.params.id },
+  })
+  .then((articles) => {
+    articles.forEach(element => {
+      element.destroy();
+    });
+  })
+  .then(debug("💣 Articles supprimés ! ✔️"))
+  .catch((err) => console.log(err))
+
+  User.findOne({
+    where: { id: req.params.id },
+    attributes: { exclude: ["password"] }, //don't pass the password unnecessarily
+  })
+  .then((user) => {
+    user.destroy()
+    .then(debug("💣 Utilisateur supprimé ! ✔️"))
+    .catch((err) => console.log(err))
+    res.send({message : "💣 Utilisateur supprimé ! ✔️"});
+  })
+  .catch(() => {
+    res.status(500).send({
+      message:
+        "💥 Erreur interne au serveur 💥",
+    }); 
+  });
 };

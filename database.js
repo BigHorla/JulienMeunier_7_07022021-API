@@ -1,4 +1,5 @@
 const { Sequelize } = require("sequelize");
+const fs = require("file-system")
 
 //You need to put values in '.env' file
 require("dotenv").config();
@@ -34,12 +35,16 @@ const User = require("./models/User");
 const Article = require("./models/Article.js");
 const Comment = require("./models/Comment.js");
 
-const reset = false; // <--------------------------------------------------------------------------------------------
-const demo = false; // <--------------------------------------------------------------------------------------------
+const reset = true; // <--------------------------------------------------------------------------------------------
+const demo = true; // <--------------------------------------------------------------------------------------------
 
 if (reset) {
-  console.log("💣  Réinitialisation des modéles... ");
+  
+  const fs = require('fs');
+  const path = require('path');
+
   try {
+    console.log("💣  Réinitialisation des modéles... ");
     User.sequelize.sync({ force: true });
     Article.sequelize.sync({ force: true });
     Comment.sequelize.sync({ force: true });
@@ -47,6 +52,19 @@ if (reset) {
     console.log("⚠️ Problème lors da la réinitialisation des modèles ❌");
   }
 
+  try{
+    console.log("💣  Réinitialisation des fichiers ");
+    fs.readdir('./img/', (err, files) => {
+      if (err) throw err;    
+      for (const file of files) {
+        fs.unlink(path.join('./img/', file), err => {
+          if (err) throw err;
+        });
+      }
+    });
+  } catch {
+    console.log("⚠️ Problème lors da la réinitialisation des fichiers ❌");
+  }
 
   const userSignin = async (
     user_password,
@@ -95,7 +113,7 @@ if (reset) {
           "Peuplu",
           "Jean",
           "Technicien",
-          "http://localhost:3000/img/1_1626698589053.png",
+          "http://localhost:3000/demo/1_1627388523458.png",
           "user"
         );
         userSignin(
@@ -104,7 +122,7 @@ if (reset) {
           "Krobat",
           "Martha",
           "Coordinatrice",
-          "http://localhost:3000/img/2_1626698605148.png",
+          "http://localhost:3000/demo/3_1626698798878.png",
           "user"
         );
         userSignin(
@@ -113,7 +131,7 @@ if (reset) {
           "Larant",
           "Guy",
           "Secrétaire",
-          "http://localhost:3000/img/3_1626698798878.png",
+          "http://localhost:3000/demo/2_1626698605148.png",
           "user"
         );
         userSignin(
@@ -122,7 +140,7 @@ if (reset) {
           "Eserge",
           "Jeanne",
           "Assitante RH",
-          "http://localhost:3000/img/4_1626698809283.png",
+          "http://localhost:3000/demo/4_1626698809283.png",
           "user"
         );
         userSignin(
@@ -131,7 +149,7 @@ if (reset) {
           "Dapleiss",
           "Kevin",
           "Service Client",
-          "http://localhost:3000/img/5_1626698635654.png",
+          "http://localhost:3000/demo/5_1626698635654.png",
           "user"
         );
         userSignin(
@@ -140,7 +158,7 @@ if (reset) {
           "Tarri",
           "Enzo",
           "Directeur de vente",
-          "http://localhost:3000/img/6_1626698824824.png",
+          "http://localhost:3000/demo/6_1626698824824.png",
           "user"
         );
         userSignin(
@@ -149,7 +167,7 @@ if (reset) {
           "Baba",
           "Nathalie",
           "Commerciale",
-          "http://localhost:3000/img/7_1626698840272.png",
+          "http://localhost:3000/demo/7_1626698840272.png",
           "user"
         );
         userSignin(
@@ -158,7 +176,7 @@ if (reset) {
           "Festt",
           "Michelle",
           "Service Client",
-          "http://localhost:3000/img/8_1626698851881.png",
+          "http://localhost:3000/demo/8_1626698851881.png",
           "user"
         );
         userSignin(
@@ -167,7 +185,7 @@ if (reset) {
           "Losophe",
           "Sophie",
           "Comptable",
-          "http://localhost:3000/img/9_1626698656351.png",
+          "http://localhost:3000/demo/9_1626698656351.png",
           "user"
         );
         userSignin(
@@ -176,7 +194,7 @@ if (reset) {
           "Leolet",
           "Paul",
           "Service Marketing",
-          "http://localhost:3000/img/10_1626698675975.png",
+          "http://localhost:3000/demo/10_1626698675975.png",
           "user"
         );
         userSignin(
@@ -185,7 +203,7 @@ if (reset) {
           "Sticko",
           "Thomas",
           "Technicien",
-          "http://localhost:3000/img/11_1626698694137.png",
+          "http://localhost:3000/demo/11_1626698694137.png",
           "user"
         );
         userSignin(
@@ -194,7 +212,7 @@ if (reset) {
           "Hoche",
           "Yacine",
           "Coordinateur",
-          "http://localhost:3000/img/12_1626698716421.png",
+          "http://localhost:3000/demo/12_1626698716421.png",
           "user"
         );
         userSignin(
@@ -203,7 +221,7 @@ if (reset) {
           "Xion",
           "Reda",
           "Secrétaire",
-          "http://localhost:3000/img/13_1626698730296.png",
+          "http://localhost:3000/demo/13_1626698730296.png",
           "user"
         );
         userSignin(
@@ -212,7 +230,7 @@ if (reset) {
           "Rotte",
           "Jessica",
           "Assitante RH",
-          "http://localhost:3000/img/14_1626698870723.png",
+          "http://localhost:3000/demo/14_1626698870723.png",
           "user"
         );
         userSignin(
@@ -221,18 +239,19 @@ if (reset) {
           "Prane",
           "Dolly",
           "Service Client",
-          "http://localhost:3000/img/15_1626698889173.png",
+          "http://localhost:3000/demo/15_1626698889173.png",
           "user"
         );
 
-        console.log("📋  La création d'articles pour la demo... 📜");
-        const newArticle = async (user, title, content, likes, likesNbr) => {
+        console.log("📋  Création d'articles pour la demo 📜");
+        const newArticle = async (user, title, content, likes, likesNbr,image) => {
           Article.create({
             AuthorId: user,
             title: title,
             content: content,
             wholike: likes,
             likes: likesNbr,
+            attachment : image
           });
         };
 
@@ -240,40 +259,41 @@ if (reset) {
           newArticle(
             16,
             "Plan de relance",
-            "Un plan de relance des ventes a été mis en place. Merci à tous.tes pour ce beau travail.",
+            "Un plan de relance des ventes a été mis en place. 👍 Merci à tous.tes pour ce beau travail.",
             "16,2,3,4,5,6,7,8,9,10,11,12,13,14,15",
             15
           );
           newArticle(
             3,
             "Bilan sur la prime",
-            "Nous sommes entrain de voir si l'objectif a été atteint pour la prime d'intéressement",
+            "Nous sommes entrain de voir si l'objectif a été atteint pour la prime d'intéressement 📈🤞",
             "16,2,15",
             3
           );
           newArticle(
             6,
-            "Nouveau Design",
-            "Bientôt un nouveau logo pour la boite !",
+            "Nouveau Design 🎉",
+            "Bientôt un nouveau logo 🎨 pour la boite !",
             "16,2",
             2
           );
           newArticle(9, 
             "Enfin !", 
-            "J'ai un nouveau téléphone !", 
+            "J'ai un nouveau téléphone ! 🥰📱", 
             "2", 
-            1
+            1,
+            "http://localhost:3000/demo/happy.gif"
           );
           newArticle(
             10,
             "C'était tendu !",
-            "Nous avons décroché le contrat avec GOOGLE ! Incroyable !",
+            "Nous avons décroché le contrat avec GOOGLE 🥳 ! Incroyable 😎 !",
             "16,2,3,4,5",
             5
           );
           newArticle(
             2,
-            "Je cherche des équipiers",
+            "Je cherche des équipiers ⚽️⚽️⚽️",
             "Qui veut monter une équipe de foot ?",
             "16,2,3,4,5,6",
             6
@@ -287,52 +307,54 @@ if (reset) {
           );
           newArticle(
             14,
-            "Place de Parking.",
-            "Je cherche une place de parking dans le coin, quelqu'un à un tuyau pour moi ?",
+            "🚗 Place de Parking 🚗",
+            "Je cherche une place de 🅿️ parking 🅿️ dans le coin, quelqu'un à un tuyau pour moi ?",
             "",
             0
           );
           newArticle(
             13,
-            "Des idées ?",
-            "Le CSE cherche des idées qui ferait plaisir pour noël ! Contactez moi si quelque chose vous traverse l'esprit !",
+            "💡 Des idées ?",
+            "Le CSE cherche des idées qui ferait plaisir pour noël 🎅⛄️ ! Contactez moi si quelque chose vous traverse l'esprit !",
             "16,2,3,4,5,6,7,8,9",
-            9
+            9,
+            "http://localhost:3000/demo/gifted.gif"
           );
           newArticle(
             12,
-            "On boit un coup ?",
-            "Qui est chaud pour boire un coup mercredi après le taf ? (ou pendant... ;p)",
+            "🍺 On boit un coup ? 🍸",
+            "Qui est chaud pour boire un coup mercredi après le taf ? (ou pendant... 🤭)",
             "16,2,3,4",
             4
           );
           newArticle(
             11,
-            "On l'a fait !",
-            "La mission marketng est une veritable victoire",
+            "🎉 On l'a fait !",
+            "La mission marketng est une veritable victoire 📈🥳",
             "16,2,3,4,5,6,7,8,9,10,11,12,13,14,15",
             15
           );
           newArticle(
             10,
-            "On recrute !",
-            "Nous recrutons 2 nouvelles personnes au poste de Dev Web, parlez en à vos connaissances du secteur !",
+            "👋 On recrute !",
+            "Nous recrutons 2 nouvelles personnes au poste de Dev Web 👩‍💻👨‍💻, parlez en à vos connaissances du secteur !",
             "16",
             1
           );
           newArticle(
             9,
             "Besoin d'aide...",
-            "Quelqu'un s'y connait en smartphone ? Je trouve plus mes photos",
+            "Quelqu'un s'y connait en smartphone ? Je trouve plus mes photos 😟",
             "",
             0
           );
           newArticle(
             8,
-            "Fermeture annuelle",
+            "🌞 Fermeture annuelle ✈️✔️",
             "Cette année nous fermerons du 7 au 21 Aout.",
             "16,2,3,4,5,6,7,8,9,10,11,12",
-            12
+            12,
+            "http://localhost:3000/demo/vacay.gif"
           );
           newArticle(
             7,
@@ -343,14 +365,14 @@ if (reset) {
           );
           newArticle(
             6,
-            "Nouveau Logo",
-            "N'oubliez pas d'aller voter pour notre nouveau logo ! c'est jusqu'à vendredi !",
+            "🎨 Nouveau Logo",
+            "N'oubliez pas d'aller voter 📊 pour notre nouveau logo ! c'est jusqu'à vendredi !",
             "16,2,3,4,5,13,14,15",
             8
           );
           newArticle(
             5,
-            "Je vend ma voiture",
+            "Je vends ma voiture 💰🚗",
             "Je vends ma voiture, si quelqu'un cherche une clio contactez moi !",
             "16,15",
             2
@@ -364,22 +386,23 @@ if (reset) {
           );
           newArticle(
             3,
-            "La prime est là",
+            "La prime est là 🎉🎉🎉",
             "Les objectifs ont été atteints ! La prime arrive en septembre !",
             "3,14,15",
-            3
+            3,
+            "http://localhost:3000/demo/money.gif"
           );
           newArticle(
             2,
-            "Tournois de foot",
-            'Les inscriptions pour le "Groupomania tounament" sont ouvertes',
+            "⚽️ Tournois de foot 🥅",
+            'Les inscriptions pour le "Groupomania tournament" sont ouvertes ⌛️',
             "16,2",
             2
           );
           newArticle(
             16,
             "Alors ?",
-            "On en est où du plan de relance ? Quelqu'un à des news ?",
+            "On en est où de la lévée de fond ? Quelqu'un à des news ? 😐",
             "",
             0
           );
@@ -418,11 +441,18 @@ if (reset) {
           newComment("8", "Cool !", "11");
           newComment("8", "Incroyable !", "13");
           newComment("8", "Nickel", "15");
-          newComment("8", "Enorme !", "2");
+          newComment("2", "Enorme !", "2");
+          newComment("2", "Incroyable !", "4");
+          newComment("2", "Nickel", "5");
+          newComment("2", "Enorme !", "10");
+          newComment("2", "Super !", "7");
+          console.log("-----Initialisation terminée !------")
         }, 3000);
       }
     });
   }, 1000);
+
+
 }
 
 //----

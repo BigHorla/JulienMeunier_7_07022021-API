@@ -13,31 +13,25 @@ const uploadArticlePic = require("../middleware/articlePic")
 //new article
 router.post("/new", uploadArticlePic.single('image'), articleCtrl.newArticle);
 
-
 //GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-
 //GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-
 //GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-GET-
 
-//get article
-router.get("/ArticleId:id", articleCtrl.getArticleByID);
 //get all articles
-router.get("/getAll", articleCtrl.getArticles);
+router.get("/getAll", auth , articleCtrl.getArticles);
+//get some articles
+router.get("/getSome/:batch", auth , articleCtrl.getSomeArticles);
 //get articles by author
-router.get("/byAuthor/:id", articleCtrl.getArticlesByAuthor);
+router.get("/byAuthor/:id", auth , articleCtrl.getArticlesByAuthor);
 //Get if user likes the article
-router.get("/whoLikeIt/:id", articleCtrl.whoLikeIt);
-//Get likes by Article ID
-router.get("/count:ArticleId", articleCtrl.count)
-
+router.get("/whoLikeIt/:id", auth , articleCtrl.whoLikeIt);
 
 //PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-
 //PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-
 //PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-PUT-
 
-//modify article
-router.put("/modify:ArticleId", articleCtrl.modify);
 //put or remove a like
-router.put("/like/:id", articleCtrl.like);
+router.put("/like/:id", auth , articleCtrl.like);
 
 
 //DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-
@@ -45,7 +39,7 @@ router.put("/like/:id", articleCtrl.like);
 //DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-DELETE-
 
 //delete article
-router.post("/delete/:id", articleCtrl.delete);
+router.delete("/delete/:id", auth , articleCtrl.delete);
 
 //-----------------------
 module.exports = router;

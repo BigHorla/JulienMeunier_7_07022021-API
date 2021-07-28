@@ -44,7 +44,7 @@ const User = sequelize.define(
     bio: {
       allowNull: true,
       type: DataTypes.STRING(350),
-      defaultValue: "Je n'ai pas encore écrit ma bio, je le fait dès que possible !",
+      defaultValue: "✏️ Je n'ai pas encore ecrit ma bio ! 🙂",
     },
     createdAt: {
       allowNull: false,
