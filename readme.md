@@ -2,7 +2,7 @@
 
 ## Front end
 ```
-https://github.com/BigHorla/JulienMeunier_7_07022021-Front
+https://github.com/BigHorla/Groupomania_Front
 ```
 
 ## Project setup
